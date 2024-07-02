@@ -1,14 +1,11 @@
 vim9script
 
-b:selected_lines = []
-b:highlight_groups_ids = []
+b:ncr_selected_lines = []
+b:ncr_highlight_groups_ids = []
 
-b:selected_lines_buffer = []
-b:highlight_groups_ids_buffer = []
+b:ncr_selected_lines_buffer = []
+b:ncr_highlight_groups_ids_buffer = []
 
-# TODO: rethink storing b:selected_lines as range strings
-# Could evaluate after every SaveRange and have b:selected_lines
-# be a regular list of numbers?
 def EvalRangeString(range_string: string): list<number>
     # evaluates a valid range string into a list of line numbers. Plain integers
     # are left alone, x-y is expanded into a list of every number between x and y
@@ -40,65 +37,46 @@ enddef
 
 def HighlightLines(lines: list<number>): void
     # before this patch, matchaddpos() could only take a maximum of eight line
-    # indices per call
+    # indices per call - see https://github.com/vim/vim/issues/11248
     if g:has_patch_9_0_0620
-        add(b:highlight_groups_ids, matchaddpos(g:ncr_highlight_group, lines))
+        add(b:ncr_highlight_groups_ids, matchaddpos(g:ncr_highlight_group, lines))
     else
         for line in lines
-            add(b:highlight_groups_ids, matchaddpos(g:ncr_highlight_group, [line]))
+            add(b:ncr_highlight_groups_ids, matchaddpos(g:ncr_highlight_group, [line]))
         endfor
     endif
 enddef
 
 def ClearHighlights(): void
-    for id in b:highlight_groups_ids
+    for id in b:ncr_highlight_groups_ids
         matchdelete(id)
     endfor
-    b:highlight_groups_ids = []
+    b:ncr_highlight_groups_ids = []
 enddef
 
 export def SaveRange(range_start: number, range_end: number): void
     if range_start == range_end
-        add(b:selected_lines, range_start)
+        extend(b:ncr_selected_lines, range_start)
         HighlightLines([range_start])
     else
-        var range_string: string = range_start .. "-" .. range_end
-        add(b:selected_lines, range_string)
-        HighlightLines(EvalRangeString(range_string))
+        var lines: list<number> = EvalRangeString(range_start .. "-" .. range_end)
+        extend(b:ncr_selected_lines, lines)
+        HighlightLines(lines)
     endif
 enddef
 
-export def GetSelections(): void
-    echo b:selected_lines
+export def GetSelection(): void
+    echo b:ncr_selected_lines
 enddef
 
-export def ExecuteOnSelections(command: string): void
-    ExecuteOnRange(join(b:selected_lines, ",") .. " " .. command)
-    b:highlight_groups_ids_buffer = b:highlight_groups_ids
+export def ClearSelection(): void
+    b:ncr_selected_lines_buffer = b:ncr_selected_lines
+    b:ncr_selected_lines = []
+    b:ncr_highlight_groups_ids_buffer = b:ncr_highlight_groups_ids
     ClearHighlights()
-    b:selected_lines_buffer = b:selected_lines
-    b:selected_lines = []
 enddef
 
-export def RestoreSelection(): void
-    if b:selected_lines_buffer == []
-        echoerr "No selection to restore!"
-        finish
-    endif
-
-    b:selected_lines = b:selected_lines_buffer
-    HighlightLines(EvalRangeString(join(b:selected_lines_buffer, ",")))
-enddef
-
-export def ExecuteOnRange(args: string): void
-    # expects a range string: a comma-separated list of either integers, or
-    # pairs of integers separated by a "-" character
-    var first_space_index: number = stridx(args, " ")
-
-    var range_string: string = args[ : first_space_index]
-    var cmd: string = args[first_space_index + 1 : ]
-
-    const lines: list<number> = EvalRangeString(range_string)
+def ExecuteOnLines(lines: list<number>, cmd: string): void
     for line in lines
         try
             execute ":" .. line .. cmd
@@ -110,7 +88,32 @@ export def ExecuteOnRange(args: string): void
     endfor
 enddef
 
-#command -nargs=* NCRExeOnRange ExecuteOnRange(<q-args>)
-#command -range NCRSaveRange SaveRange(<line1>, <line2>)
-#command NCRGetSel GetSelections()
-#command -nargs=* NCRExeOnSel ExecuteOnSelections(<q-args>)
+export def ExecuteOnSelection(cmd: string): void
+    ExecuteOnLines(b:ncr_selected_lines, cmd)
+    b:ncr_highlight_groups_ids_buffer = b:ncr_highlight_groups_ids
+    b:ncr_selected_lines_buffer = b:ncr_selected_lines
+    ClearHighlights()
+    b:ncr_selected_lines = []
+enddef
+
+export def ExecuteOnRange(args: string): void
+    # expects a range string: a comma-separated list of either integers, or
+    # pairs of integers separated by a "-" character
+    var first_space_index: number = stridx(args, " ")
+
+    var range_string: string = args[ : first_space_index]
+    var cmd: string = args[first_space_index + 1 : ]
+
+    ExecuteOnLines(EvalRangeString(range_string), cmd)
+enddef
+
+export def RestoreSelection(): void
+    if b:ncr_selected_lines_buffer == []
+        echoerr "No selection to restore!"
+        finish
+    endif
+
+    b:ncr_selected_lines = b:ncr_selected_lines_buffer
+    HighlightLines(EvalRangeString(join(b:ncr_selected_lines_buffer, ",")))
+enddef
+
