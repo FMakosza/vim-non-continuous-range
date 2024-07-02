@@ -6,6 +6,9 @@ b:highlight_groups_ids = []
 b:selected_lines_buffer = []
 b:highlight_groups_ids_buffer = []
 
+# TODO: rethink storing b:selected_lines as range strings
+# Could evaluate after every SaveRange and have b:selected_lines
+# be a regular list of numbers?
 def EvalRangeString(range_string: string): list<number>
     # evaluates a valid range string into a list of line numbers. Plain integers
     # are left alone, x-y is expanded into a list of every number between x and y
@@ -84,7 +87,7 @@ export def RestoreSelection(): void
     endif
 
     b:selected_lines = b:selected_lines_buffer
-    HighlightLines(b:selected_lines_buffer)
+    HighlightLines(EvalRangeString(join(b:selected_lines_buffer, ",")))
 enddef
 
 export def ExecuteOnRange(args: string): void
