@@ -1,7 +1,10 @@
 vim9script
 
-# stores list of line numbers
 b:selected_lines = []
+b:highlight_groups_ids = []
+
+b:selected_lines_buffer = []
+b:highlight_groups_ids_buffer = []
 
 def EvalRangeString(range_string: string): list<number>
     # evaluates a valid range string into a list of line numbers. Plain integers
@@ -32,11 +35,33 @@ def EvalRangeString(range_string: string): list<number>
     return uniq(reverse(sort(lines)))
 enddef
 
+def HighlightLines(lines: list<number>): void
+    # before this patch, matchaddpos() could only take a maximum of eight line
+    # indices per call
+    if g:has_patch_9_0_0620
+        add(b:highlight_groups_ids, matchaddpos(g:ncr_highlight_group, lines))
+    else
+        for line in lines
+            add(b:highlight_groups_ids, matchaddpos(g:ncr_highlight_group, [line]))
+        endfor
+    endif
+enddef
+
+def ClearHighlights(): void
+    for id in b:highlight_groups_ids
+        matchdelete(id)
+    endfor
+    b:highlight_groups_ids = []
+enddef
+
 export def SaveRange(range_start: number, range_end: number): void
     if range_start == range_end
         add(b:selected_lines, range_start)
+        HighlightLines([range_start])
     else
-        add(b:selected_lines, range_start .. "-" .. range_end)
+        var range_string: string = range_start .. "-" .. range_end
+        add(b:selected_lines, range_string)
+        HighlightLines(EvalRangeString(range_string))
     endif
 enddef
 
@@ -46,6 +71,20 @@ enddef
 
 export def ExecuteOnSelections(command: string): void
     ExecuteOnRange(join(b:selected_lines, ",") .. " " .. command)
+    b:highlight_groups_ids_buffer = b:highlight_groups_ids
+    ClearHighlights()
+    b:selected_lines_buffer = b:selected_lines
+    b:selected_lines = []
+enddef
+
+export def RestoreSelection(): void
+    if b:selected_lines_buffer == []
+        echoerr "No selection to restore!"
+        finish
+    endif
+
+    b:selected_lines = b:selected_lines_buffer
+    HighlightLines(b:selected_lines_buffer)
 enddef
 
 export def ExecuteOnRange(args: string): void
@@ -61,7 +100,7 @@ export def ExecuteOnRange(args: string): void
         try
             execute ":" .. line .. cmd
         catch /.*/
-            # ignores all errors - ideally should selectively echo useful 
+            # ignores all errors - ideally should selectively echo useful
             # errors to the user while continuing to iterate
             continue
         endtry
