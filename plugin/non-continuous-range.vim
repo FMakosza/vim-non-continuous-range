@@ -16,7 +16,7 @@ endif
 
 g:has_patch_9_0_0620 = has("patch-9.0.0620")
 
-import * as ncr from '../autoload/non_continuous_range.vim'
+import * as ncr from '../autoload/non-continuous-range.vim'
 
 def Init(): void
     if !exists('b:ncr_selected_lines') | b:ncr_selected_lines = [] | endif
