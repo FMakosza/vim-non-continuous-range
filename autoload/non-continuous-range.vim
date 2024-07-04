@@ -29,10 +29,8 @@ def EvalRangeString(range_string: string): list<number>
             endfor
         endif
     endfor
-    # sort and reverse the line numbers so that later lines are executed
-    # first - this means that if the command deletes lines, the line indices
-    # aren't thrown out of alignment
-    return uniq(reverse(sort(lines)))
+
+    return lines
 enddef
 
 def HighlightLines(lines: list<number>): void
@@ -56,7 +54,7 @@ enddef
 
 export def SaveRange(range_start: number, range_end: number): void
     if range_start == range_end
-        extend(b:ncr_selected_lines, range_start)
+        extend(b:ncr_selected_lines, [range_start])
         HighlightLines([range_start])
     else
         var lines: list<number> = EvalRangeString(range_start .. "-" .. range_end)
@@ -77,8 +75,12 @@ export def ClearSelection(): void
 enddef
 
 def ExecuteOnLines(lines: list<number>, cmd: string): void
-    for line in lines
+    # sort and reverse the line numbers so that later lines are executed
+    # first - this means that if the command deletes lines, the line indices
+    # aren't thrown out of alignment
+    for line in uniq(reverse(sort(lines)))
         try
+            #echo "Running :" .. line .. cmd
             execute ":" .. line .. cmd
         catch /.*/
             # ignores all errors - ideally should selectively echo useful
