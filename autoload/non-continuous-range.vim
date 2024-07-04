@@ -11,6 +11,20 @@ def GetSelectedLines(): list<number>
     return mapnew(keys(b:ncr_selected_lines), "str2nr(v:val)")
 enddef
 
+def AppendSelectedLines(lines: list<number>): void
+    for line in lines
+        b:ncr_selected_lines[line] = 1
+    endfor
+enddef
+
+def SubtractSelectedLines(lines: list<number>): void
+    for line in lines
+        if has_key(b:ncr_selected_lines, line)
+            remove(b:ncr_selected_lines, line)
+        endif
+    endfor
+enddef
+
 def EvalRangeString(range_string: string): list<number>
     # evaluates a valid range string into a list of line numbers. Plain integers
     # are left alone, x-y is expanded into a list of every number between x and y
@@ -59,30 +73,21 @@ enddef
 
 export def AppendRange(range_start: number, range_end: number): void
     if range_start == range_end
-        b:ncr_selected_lines[range_start] = 1
+        AppendSelectedLines([range_start])
         HighlightLines([range_start])
     else
         var lines: list<number> = EvalRangeString(range_start .. "-" .. range_end)
-        for line in lines
-            b:ncr_selected_lines[line] = 1
-        endfor
+        AppendSelectedLines(lines)
         HighlightLines(lines)
     endif
 enddef
 
 export def SubtractRange(range_start: number, range_end: number): void
-    var selected_lines: list<number> = GetSelectedLines()
     if range_start == range_end
-        if index(selected_lines, range_start) >= 0
-            remove(b:ncr_selected_lines, range_start)
-        endif
+        SubtractSelectedLines([range_start])
     else
         var lines: list<number> = EvalRangeString(range_start .. "-" .. range_end)
-        for line in lines
-            if index(selected_lines, line) >= 0
-                remove(b:ncr_selected_lines, line)
-            endif
-        endfor
+        SubtractSelectedLines(lines)
     endif
     ClearHighlights()
     HighlightLines(GetSelectedLines())
