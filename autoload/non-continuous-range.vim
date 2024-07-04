@@ -7,6 +7,10 @@ b:ncr_highlight_groups_ids = []
 b:ncr_selected_lines_buffer = {}
 b:ncr_highlight_groups_ids_buffer = []
 
+def GetSelectedLines(): list<number>
+    return mapnew(keys(b:ncr_selected_lines), "str2nr(v:val)")
+enddef
+
 def EvalRangeString(range_string: string): list<number>
     # evaluates a valid range string into a list of line numbers. Plain integers
     # are left alone, x-y is expanded into a list of every number between x and y
@@ -53,7 +57,7 @@ def ClearHighlights(): void
     b:ncr_highlight_groups_ids = []
 enddef
 
-export def SaveRange(range_start: number, range_end: number): void
+export def AppendRange(range_start: number, range_end: number): void
     if range_start == range_end
         b:ncr_selected_lines[range_start] = 1
         HighlightLines([range_start])
@@ -66,8 +70,26 @@ export def SaveRange(range_start: number, range_end: number): void
     endif
 enddef
 
+export def SubtractRange(range_start: number, range_end: number): void
+    var selected_lines: list<number> = GetSelectedLines()
+    if range_start == range_end
+        if index(selected_lines, range_start) >= 0
+            remove(b:ncr_selected_lines, range_start)
+        endif
+    else
+        var lines: list<number> = EvalRangeString(range_start .. "-" .. range_end)
+        for line in lines
+            if index(selected_lines, line) >= 0
+                remove(b:ncr_selected_lines, line)
+            endif
+        endfor
+    endif
+    ClearHighlights()
+    HighlightLines(GetSelectedLines())
+enddef
+
 export def GetSelection(): void
-    echo keys(b:ncr_selected_lines)
+    echo GetSelectedLines()
 enddef
 
 export def ClearSelection(): void
@@ -94,7 +116,7 @@ def ExecuteOnLines(lines: list<number>, cmd: string): void
 enddef
 
 export def ExecuteOnSelection(cmd: string): void
-    ExecuteOnLines(mapnew(keys(b:ncr_selected_lines), "str2nr(v:val)"), cmd)
+    ExecuteOnLines(GetSelectedLines(), cmd)
     b:ncr_highlight_groups_ids_buffer = b:ncr_highlight_groups_ids
     b:ncr_selected_lines_buffer = b:ncr_selected_lines
     ClearHighlights()
@@ -119,6 +141,6 @@ export def RestoreSelection(): void
     endif
 
     b:ncr_selected_lines = b:ncr_selected_lines_buffer
-    HighlightLines(EvalRangeString(join(keys(b:ncr_selected_lines_buffer), ",")))
+    HighlightLines(EvalRangeString(join(GetSelectedLines(), ",")))
 enddef
 
