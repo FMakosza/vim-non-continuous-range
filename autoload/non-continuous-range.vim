@@ -1,9 +1,10 @@
 vim9script
 
-b:ncr_selected_lines = []
+# use dictionary keys as set
+b:ncr_selected_lines = {}
 b:ncr_highlight_groups_ids = []
 
-b:ncr_selected_lines_buffer = []
+b:ncr_selected_lines_buffer = {}
 b:ncr_highlight_groups_ids_buffer = []
 
 def EvalRangeString(range_string: string): list<number>
@@ -54,22 +55,24 @@ enddef
 
 export def SaveRange(range_start: number, range_end: number): void
     if range_start == range_end
-        extend(b:ncr_selected_lines, [range_start])
+        b:ncr_selected_lines[range_start] = 1
         HighlightLines([range_start])
     else
         var lines: list<number> = EvalRangeString(range_start .. "-" .. range_end)
-        extend(b:ncr_selected_lines, lines)
+        for line in lines
+            b:ncr_selected_lines[line] = 1
+        endfor
         HighlightLines(lines)
     endif
 enddef
 
 export def GetSelection(): void
-    echo b:ncr_selected_lines
+    echo keys(b:ncr_selected_lines)
 enddef
 
 export def ClearSelection(): void
     b:ncr_selected_lines_buffer = b:ncr_selected_lines
-    b:ncr_selected_lines = []
+    b:ncr_selected_lines = {}
     b:ncr_highlight_groups_ids_buffer = b:ncr_highlight_groups_ids
     ClearHighlights()
 enddef
@@ -91,11 +94,11 @@ def ExecuteOnLines(lines: list<number>, cmd: string): void
 enddef
 
 export def ExecuteOnSelection(cmd: string): void
-    ExecuteOnLines(b:ncr_selected_lines, cmd)
+    ExecuteOnLines(mapnew(keys(b:ncr_selected_lines), "str2nr(v:val)"), cmd)
     b:ncr_highlight_groups_ids_buffer = b:ncr_highlight_groups_ids
     b:ncr_selected_lines_buffer = b:ncr_selected_lines
     ClearHighlights()
-    b:ncr_selected_lines = []
+    b:ncr_selected_lines = {}
 enddef
 
 export def ExecuteOnRange(args: string): void
@@ -110,12 +113,12 @@ export def ExecuteOnRange(args: string): void
 enddef
 
 export def RestoreSelection(): void
-    if b:ncr_selected_lines_buffer == []
+    if b:ncr_selected_lines_buffer == {}
         echoerr "No selection to restore!"
         finish
     endif
 
     b:ncr_selected_lines = b:ncr_selected_lines_buffer
-    HighlightLines(EvalRangeString(join(b:ncr_selected_lines_buffer, ",")))
+    HighlightLines(EvalRangeString(join(keys(b:ncr_selected_lines_buffer), ",")))
 enddef
 
