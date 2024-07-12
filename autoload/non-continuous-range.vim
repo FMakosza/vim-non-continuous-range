@@ -94,7 +94,7 @@ export def SubtractRange(range_start: number, range_end: number): void
 enddef
 
 export def GetSelection(): void
-    echo GetSelectedLines()
+    echo sort(GetSelectedLines(), 'N')
 enddef
 
 export def ClearSelection(): void
