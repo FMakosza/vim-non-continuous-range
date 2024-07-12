@@ -72,6 +72,11 @@ non-continuous-range exposes the following commands:
 :NCRShow            Prints the line selection list to the vim command line.
 
 ===============================================================================
+Mappings                                                            *NCRMappings*
+
+This plugin doesn't provide any mappings by default.
+
+===============================================================================
 Miscellaneous
 
                                                                     *ncrrangestr*
