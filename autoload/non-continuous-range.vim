@@ -134,6 +134,11 @@ export def ExecuteOnRange(args: string): void
     var first_space_index: number = stridx(args, " ")
 
     var range_string: string = args[ : first_space_index]
+    if range_string =~ "[^0-9,]"
+        echoerr "Invalid range string argument!"
+        return
+    endif
+
     var cmd: string = args[first_space_index + 1 : ]
 
     ExecuteOnLines(EvalRangeString(range_string), cmd)
@@ -142,7 +147,7 @@ enddef
 export def RestoreSelection(): void
     if b:ncr_selected_lines_buffer == {}
         echoerr "No selection to restore!"
-        finish
+        return
     endif
 
     b:ncr_selected_lines = b:ncr_selected_lines_buffer
