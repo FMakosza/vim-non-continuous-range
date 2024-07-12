@@ -1,0 +1,25 @@
+non-continuous-range.txt        Run commands across non-continuous line ranges.
+                                                      Last modified: 2024-07-12
+
+Contents                             *NCRContents* *non-continuous-range* *ncr*
+
+===============================================================================
+Introduction                                                  *NCRIntroduction*
+
+The non-continuous-range plugin allows you to execute arbitrary Ex expressions
+on arbitrary lines in the open buffer. You can select the lines visually, or by
+using a range string directly in the command line.
+
+All non-continuous-range commands start with the letters 'NCR'.
+
+===============================================================================
+Commands                                                          *NCRCommands*
+
+non-continuous-range exposes the following commands:
+
+                                                                    *NCRAppend*
+:NCRAppend          Append the current line to the line selection.
+
+:[range]NCRAppend   Append [range] lines to the line selection.
+
+vim:tw=79:ts=4:sw=4:ft=help:norl
