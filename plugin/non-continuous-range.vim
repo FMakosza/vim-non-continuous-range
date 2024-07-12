@@ -9,11 +9,6 @@ if !exists('g:ncr_highlight_group')
     g:ncr_highlight_group = 'Visual'
 endif
 
-if !exists('g:ncr_always_highlight')
-    # TODO: make this actually do something
-    g:ncr_always_highlight = true
-endif
-
 g:has_patch_9_0_0620 = has("patch-9.0.0620")
 
 import * as ncr from '../autoload/non-continuous-range.vim'
