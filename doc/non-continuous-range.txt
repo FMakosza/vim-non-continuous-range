@@ -1,10 +1,10 @@
 non-continuous-range.txt        Run commands across non-continuous line ranges.
                                                       Last modified: 2024-07-12
 
-Contents                             *NCRContents* *non-continuous-range* *ncr*
+Contents                                  *NCR*  *NCRContents* *non-continuous-range*
 
 ===============================================================================
-Introduction                                                  *NCRIntroduction*
+Introduction                                                    *NCRIntroduction*
 
 The non-continuous-range plugin allows you to execute arbitrary Ex expressions
 on arbitrary lines in the open buffer. You can select the lines visually, or by
@@ -13,13 +13,61 @@ using a range string directly in the command line.
 All non-continuous-range commands start with the letters 'NCR'.
 
 ===============================================================================
-Commands                                                          *NCRCommands*
+Commands                                                            *NCRCommands*
 
 non-continuous-range exposes the following commands:
 
-                                                                    *NCRAppend*
+                                                                     *:NCRAppend*
 :NCRAppend          Append the current line to the line selection.
 
 :[range]NCRAppend   Append [range] lines to the line selection.
+
+                                                                   *:NCRSubtract*
+:NCRSubtract        Remove the current line from the line selection.
+
+:[range]NCRSubtract Remove [range] lines from the line selection.
+
+                                                                      *:NCRClear*
+:NCRClear           Remove all lines from the line selection.
+
+                                                             *:NCRExeOnSelection*
+:NCRExeOnSelection {expr}
+                    Execute {expr} on the line selection. {expr} may be any
+                    valid `:execute` expression.
+
+                    The plugin will execute {expr} on every line in the line
+                    selection individually, starting from the highest line
+                    number and going down.
+
+                                                                 *:NCRExeOnRange*
+:NCRExeOnRange {|ncrangestr|} {expr}
+                    Execute {expr} on the lines defined by {ncrrangestr}. 
+                    {expr} may be any valid `:execute` expression.
+
+                    See |ncrrangestr| for valid range string formatting.
+
+                    The plugin will execute {expr} on every line in the line
+                    selection individually, starting from the highest line
+                    number and going down.
+
+                                                                    *:NCRRestore*
+:NCRRestore         Restore the most recent line selection. This command
+                    restores selections cleared by |:NCRClear| and both
+                    execute commands.
+
+                                                                       *:NCRShow*
+:NCRShow            Prints the line selection list to the vim command line.
+
+===============================================================================
+Miscellaneous
+
+                                                                    *ncrrangestr*
+{ncrrangestr}       A range string. Range strings are comma-separated elements
+                    which can either be a plain integer (representing a single
+                    line), or two numbers separated by a dash (representing a
+                    line range).
+
+                    For example, {rangestr} 1,4-7 would represent lines 1, 4,
+                    5, 6, and 7.
 
 vim:tw=79:ts=4:sw=4:ft=help:norl

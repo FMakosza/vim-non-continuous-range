@@ -1,0 +1,13 @@
+:NCRAppend	non-continuous-range.txt	/*:NCRAppend*
+:NCRClear	non-continuous-range.txt	/*:NCRClear*
+:NCRExeOnRange	non-continuous-range.txt	/*:NCRExeOnRange*
+:NCRExeOnSelection	non-continuous-range.txt	/*:NCRExeOnSelection*
+:NCRRestore	non-continuous-range.txt	/*:NCRRestore*
+:NCRShow	non-continuous-range.txt	/*:NCRShow*
+:NCRSubtract	non-continuous-range.txt	/*:NCRSubtract*
+NCR	non-continuous-range.txt	/*NCR*
+NCRCommands	non-continuous-range.txt	/*NCRCommands*
+NCRContents	non-continuous-range.txt	/*NCRContents*
+NCRIntroduction	non-continuous-range.txt	/*NCRIntroduction*
+ncrrangestr	non-continuous-range.txt	/*ncrrangestr*
+non-continuous-range	non-continuous-range.txt	/*non-continuous-range*
