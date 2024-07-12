@@ -6,10 +6,10 @@ Run commands across non-continuous line ranges.
 
 This plugin requires vim9script, but not necessarily vim9 itself. Some distributions compile the version of vim8 in their repositories with vim9script support, which this plugin aims to support. It has been tested on vim v8.2.
 
-Using [vim-plug]{https://github.com/junegunn/vim-plug}:
+Using [vim-plug](https://github.com/junegunn/vim-plug):
     `Plug 'FMakosza/vim-non-continuous-range'`
 
-Using [vundle]{https://github.com/VundleVim/Vundle.vim}:
+Using [vundle](https://github.com/VundleVim/Vundle.vim):
     `Plugin 'FMakosza/vim-non-continuous-range'`
 
 ## Overview
