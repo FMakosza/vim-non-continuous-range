@@ -12,6 +12,19 @@ using a range string directly in the command line.
 
 All non-continuous-range commands start with the letters 'NCR'.
 
+This plugin requires vim9script support, but this doesn't necessarily mean you
+need vim9. In some distributions where vim8 is the most recent version, vim has
+been compiled with vim9script support. This plugin aims to support these
+versions.
+
+===============================================================================
+Configuration                                                  *NCRConfiguration*
+
+                                                          *g:ncr_highlight_group*
+g:ncr_highlight_group
+                    The highlight group used to indicate the line selection.
+                    Set to 'Visual' by default.
+
 ===============================================================================
 Commands                                                            *NCRCommands*
 

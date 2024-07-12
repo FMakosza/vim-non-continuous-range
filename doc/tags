@@ -7,7 +7,9 @@
 :NCRSubtract	non-continuous-range.txt	/*:NCRSubtract*
 NCR	non-continuous-range.txt	/*NCR*
 NCRCommands	non-continuous-range.txt	/*NCRCommands*
+NCRConfiguration	non-continuous-range.txt	/*NCRConfiguration*
 NCRContents	non-continuous-range.txt	/*NCRContents*
 NCRIntroduction	non-continuous-range.txt	/*NCRIntroduction*
+g:ncr_highlight_group	non-continuous-range.txt	/*g:ncr_highlight_group*
 ncrrangestr	non-continuous-range.txt	/*ncrrangestr*
 non-continuous-range	non-continuous-range.txt	/*non-continuous-range*
