@@ -8,7 +8,7 @@ Introduction                                                    *NCRIntroduction
 
 The non-continuous-range plugin allows you to execute arbitrary Ex expressions
 on arbitrary lines in the open buffer. You can select the lines visually, or by
-using a range string directly in the command line.
+using a range string |ncrrangestr| directly in the command line.
 
 All non-continuous-range commands start with the letters 'NCR'.
 
@@ -53,7 +53,7 @@ non-continuous-range exposes the following commands:
                     number and going down.
 
                                                                  *:NCRExeOnRange*
-:NCRExeOnRange {|ncrangestr|} {expr}
+:NCRExeOnRange {|ncrrangestr|} {expr}
                     Execute {expr} on the lines defined by {ncrrangestr}. 
                     {expr} may be any valid `:execute` expression.
 
